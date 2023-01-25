@@ -79,35 +79,17 @@ class RemoteSearchLoaderTests: XCTestCase {
     func test_load_deliversErrorOnClientError() {
         let (sut, client) = makeSUT(url: anyURL)
         
-        let exp = expectation(description: "wait for completion")
-        var receievedError:RemoteSearchLoader.Error?
-        sut.load {
-            receievedError = $0
-            exp.fulfill()
-        }
-        
-        client.complete(with: anyNSError)
-        
-        wait(for: [exp], timeout: 0.01)
-        
-        XCTAssertEqual(receievedError , RemoteSearchLoader.Error.connectivity)
+        expect(sut, toCompleteWith: .connectivity, when: {
+            client.complete(with: anyNSError)
+        })
     }
     
     func test_load_deliversErrorOnNon200HTTPResponse() {
         let (sut, client) = makeSUT(url: anyURL)
         
-        let exp = expectation(description: "wait for completion")
-        var receievedError:RemoteSearchLoader.Error?
-        sut.load {
-            receievedError = $0
-            exp.fulfill()
-        }
-        
-        client.complete(withStatusCode: 400)
-        
-        wait(for: [exp], timeout: 0.01)
-        
-        XCTAssertEqual(receievedError , RemoteSearchLoader.Error.invalidData)
+        expect(sut, toCompleteWith: .invalidData, when: {
+            client.complete(withStatusCode: 400)
+        })
     }
     
     // MARK:  Helpers
@@ -124,6 +106,28 @@ class RemoteSearchLoaderTests: XCTestCase {
         trackForMemoryLeaks(client,file: file,line: line)
         
         return (sut,client)
+    }
+    
+    private func expect(
+        _ sut: RemoteSearchLoader,
+        toCompleteWith error: RemoteSearchLoader.Error,
+        when action: (() -> Void),
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        
+        let exp = expectation(description: "wait for completion")
+        var receievedError:RemoteSearchLoader.Error?
+        sut.load {
+            receievedError = $0
+            exp.fulfill()
+        }
+        
+        action()
+        
+        wait(for: [exp], timeout: 0.01)
+        
+        XCTAssertEqual(receievedError , error,file: file,line: line)
     }
     
     private var anyURL: URL {
