@@ -8,7 +8,7 @@
 import XCTest
 
 enum HTTPClientResult {
-    case success(HTTPURLResponse)
+    case success(Data,HTTPURLResponse)
     case failure(Error)
 }
 
@@ -34,11 +34,13 @@ class RemoteSearchLoader {
     func load(completion:@escaping ((Error) -> Void)) {
         client.get(from: url) { result in
             switch result {
-            case let .success(response):
-                if response.statusCode != 200 {
+            case let .success(data,response):
+                if let _ = try? JSONSerialization.jsonObject(with: data) {
+                    completion(.connectivity)
+                } else if response.statusCode != 200 {
                     completion(.invalidData)
                 } else {
-                    completion(.connectivity)
+                    completion(.invalidData)
                 }
                 
             case .failure:
@@ -94,6 +96,15 @@ class RemoteSearchLoaderTests: XCTestCase {
                 client.complete(withStatusCode: code,at: index)
             })
         }
+    }
+    
+    func test_load_deliversErrorOn200HTTPResponseWithInvalidJSON() {
+        let invalidData = Data("invalid data".utf8)
+        let (sut, client) = makeSUT(url: anyURL)
+        
+        expect(sut, toCompleteWith: .invalidData, when: {
+            client.complete(withStatusCode: 200,data: invalidData)
+        })
     }
     
     // MARK:  Helpers
@@ -158,12 +169,16 @@ class RemoteSearchLoaderTests: XCTestCase {
             messages[index].completion(.failure(error))
         }
         
-        func complete(withStatusCode code: Int,at index: Int = 0) {
+        func complete(
+            withStatusCode code: Int,
+            data: Data = Data(),
+            at index: Int = 0
+        ) {
             let response = HTTPURLResponse(url: URL(string: "https://any-given-url.com")!,
                                            statusCode: code,
                                            httpVersion: nil,
                                            headerFields: nil)!
-            messages[index].completion(.success(response))
+            messages[index].completion(.success(data,response))
         }
     }
     
