@@ -25,7 +25,7 @@ class RemoteSearchLoader {
         self.client = client
     }
     
-    func load(completion:@escaping ((Error) -> Void) = { _ in }) {
+    func load(completion:@escaping ((Error) -> Void)) {
         client.get(from: url) { _ in
             completion(.connectivity)
         }
@@ -44,7 +44,7 @@ class RemoteSearchLoaderTests: XCTestCase {
         let url = anyURL
         let (sut, client) = makeSUT(url: url)
         
-        sut.load()
+        sut.load { _ in }
         
         XCTAssertEqual(client.requestedURLs,[url])
     }
@@ -53,8 +53,8 @@ class RemoteSearchLoaderTests: XCTestCase {
         let url = anyURL
         let (sut, client) = makeSUT(url: url)
         
-        sut.load()
-        sut.load()
+        sut.load { _ in }
+        sut.load { _ in }
         
         XCTAssertEqual(client.requestedURLs,[url,url])
     }
