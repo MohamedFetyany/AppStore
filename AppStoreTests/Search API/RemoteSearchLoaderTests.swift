@@ -87,9 +87,13 @@ class RemoteSearchLoaderTests: XCTestCase {
     func test_load_deliversErrorOnNon200HTTPResponse() {
         let (sut, client) = makeSUT(url: anyURL)
         
-        expect(sut, toCompleteWith: .invalidData, when: {
-            client.complete(withStatusCode: 400)
-        })
+        let samples = [199,201,300,400,500]
+        
+        samples.enumerated().forEach { index,code in
+            expect(sut, toCompleteWith: .invalidData, when: {
+                client.complete(withStatusCode: code,at: index)
+            })
+        }
     }
     
     // MARK:  Helpers
