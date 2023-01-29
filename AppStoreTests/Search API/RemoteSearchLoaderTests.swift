@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import AppStore
 
 enum HTTPClientResult {
     case success(Data,HTTPURLResponse)
@@ -26,25 +27,28 @@ class RemoteSearchLoader {
         case invalidData
     }
     
+    enum Result {
+        case success([SearchItem])
+        case failure(Error)
+    }
+    
     init(url: URL,client: HTTPClient) {
         self.url = url
         self.client = client
     }
     
-    func load(completion:@escaping ((Error) -> Void)) {
+    func load(completion:@escaping ((Result) -> Void)) {
         client.get(from: url) { result in
             switch result {
             case let .success(data,response):
-                if let _ = try? JSONSerialization.jsonObject(with: data) {
-                    completion(.connectivity)
-                } else if response.statusCode != 200 {
-                    completion(.invalidData)
+                if let _ = try? JSONSerialization.jsonObject(with: data), response.statusCode == 200 {
+                    completion(.success([]))
                 } else {
-                    completion(.invalidData)
+                    completion(.failure(.invalidData))
                 }
                 
             case .failure:
-                completion(.connectivity)
+                completion(.failure(.connectivity))
             }
             
         }
@@ -81,7 +85,7 @@ class RemoteSearchLoaderTests: XCTestCase {
     func test_load_deliversErrorOnClientError() {
         let (sut, client) = makeSUT(url: anyURL)
         
-        expect(sut, toCompleteWith: .connectivity, when: {
+        expect(sut, toCompleteWith: failure(.connectivity), when: {
             client.complete(with: anyNSError)
         })
     }
@@ -92,7 +96,7 @@ class RemoteSearchLoaderTests: XCTestCase {
         let samples = [199,201,300,400,500]
         
         samples.enumerated().forEach { index,code in
-            expect(sut, toCompleteWith: .invalidData, when: {
+            expect(sut, toCompleteWith: failure(.invalidData), when: {
                 client.complete(withStatusCode: code,at: index)
             })
         }
@@ -102,8 +106,17 @@ class RemoteSearchLoaderTests: XCTestCase {
         let invalidData = Data("invalid data".utf8)
         let (sut, client) = makeSUT(url: anyURL)
         
-        expect(sut, toCompleteWith: .invalidData, when: {
+        expect(sut, toCompleteWith: failure(.invalidData), when: {
             client.complete(withStatusCode: 200,data: invalidData)
+        })
+    }
+    
+    func test_load_deliversNoItemsOn200HTTPResponseWithEmptyJSONList() {
+        let data = makeResultsJson([])
+        let (sut, client) = makeSUT(url: anyURL)
+        
+        expect(sut, toCompleteWith: .success([]), when: {
+            client.complete(withStatusCode: 200,data: data)
         })
     }
     
@@ -123,26 +136,45 @@ class RemoteSearchLoaderTests: XCTestCase {
         return (sut,client)
     }
     
+    private func makeResultsJson(_ items: [[String: Any]]) -> Data {
+        let json = ["results": items]
+        return try! JSONSerialization.data(withJSONObject: json)
+    }
+    
+    private func failure(_ error: RemoteSearchLoader.Error) -> RemoteSearchLoader.Result {
+        .failure(error)
+    }
+    
     private func expect(
         _ sut: RemoteSearchLoader,
-        toCompleteWith error: RemoteSearchLoader.Error,
+        toCompleteWith expectedResult: RemoteSearchLoader.Result,
         when action: (() -> Void),
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
         
         let exp = expectation(description: "wait for completion")
-        var receievedError:RemoteSearchLoader.Error?
-        sut.load {
-            receievedError = $0
+        
+        sut.load { receivedResult in
+
+            switch (receivedResult,expectedResult) {
+                
+            case let (.success(recievedItems),.success(expectedItems)):
+                XCTAssertEqual(recievedItems , expectedItems,file: file,line: line)
+                
+            case let (.failure(receivedError),.failure(expectedError)):
+                XCTAssertEqual(receivedError , expectedError,file: file,line: line)
+                
+            default:
+                XCTFail("Expected result \(expectedResult) but got \(receivedResult) instead",file: file,line: line)
+            }
+            
             exp.fulfill()
         }
         
         action()
         
         wait(for: [exp], timeout: 0.01)
-        
-        XCTAssertEqual(receievedError , error,file: file,line: line)
     }
     
     private var anyURL: URL {

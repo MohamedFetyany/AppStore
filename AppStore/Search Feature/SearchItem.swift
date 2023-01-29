@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SearchItem {
+public struct SearchItem: Equatable {
     let trackId: Int
     let trackName: String
     let primaryGenreName: String
