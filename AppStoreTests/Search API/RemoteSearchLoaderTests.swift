@@ -39,6 +39,7 @@ class RemoteSearchLoader {
     
     func load(completion:@escaping ((Result) -> Void)) {
         client.get(from: url) { [weak self] result in
+            guard self != nil else { return }
             
             switch result {
             case let .success(data,response):
@@ -199,6 +200,19 @@ class RemoteSearchLoaderTests: XCTestCase {
             let json = makeResultsJson([item1.json,item2.json])
             client.complete(withStatusCode: 200,data: json)
         })
+    }
+    
+    func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
+        let client = HTTPClientSpy()
+        var sut: RemoteSearchLoader?  = RemoteSearchLoader(url: anyURL, client: client)
+        
+        var capturedResults = [RemoteSearchLoader.Result]()
+        sut?.load { capturedResults.append($0) }
+        
+        sut = nil
+        client.complete(withStatusCode: 200,data: makeResultsJson([]))
+        
+        XCTAssertTrue(capturedResults.isEmpty)
     }
     
     // MARK:  Helpers
