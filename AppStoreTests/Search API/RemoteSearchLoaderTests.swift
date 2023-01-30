@@ -38,12 +38,14 @@ class RemoteSearchLoader {
     }
     
     func load(completion:@escaping ((Result) -> Void)) {
-        client.get(from: url) { result in
+        client.get(from: url) { [weak self] result in
+            
             switch result {
             case let .success(data,response):
-                if let _ = try? JSONSerialization.jsonObject(with: data), response.statusCode == 200 {
-                    completion(.success([]))
-                } else {
+                do {
+                    let items = try SearchItemsMapper.map(data: data, from: response)
+                    completion(.success(items))
+                } catch {
                     completion(.failure(.invalidData))
                 }
                 
@@ -52,6 +54,53 @@ class RemoteSearchLoader {
             }
             
         }
+    }
+}
+
+final class SearchItemsMapper: Decodable {
+    
+    private let results: [Item]
+    
+    var items: [SearchItem] {
+        results.map { $0.item }
+    }
+    
+    private struct Item: Decodable {
+        let trackId: Int
+        let trackName: String
+        let primaryGenreName: String
+        let averageUserRating: Float?
+        let screenshotUrls: [URL]
+        let artworkUrl100: URL
+        let formattedPrice: String?
+        let description: String?
+        let releaseNotes: String?
+        let artistName: String?
+        let collectionName: String?
+        
+        var item: SearchItem {
+            SearchItem(
+                trackId: trackId,
+                trackName: trackName,
+                primaryGenreName: primaryGenreName,
+                rate: averageUserRating,
+                screenshotUrls: screenshotUrls,
+                iconImage: artworkUrl100,
+                formattedPrice: formattedPrice,
+                description: description,
+                releaseNotes: releaseNotes,
+                artistName: artistName,
+                collectionName: collectionName
+            )
+        }
+    }
+    
+    static func map(data: Data,from response: HTTPURLResponse) throws -> [SearchItem] {
+        guard response.statusCode == 200 ,let root = try? JSONDecoder().decode(SearchItemsMapper.self, from: data) else {
+            throw RemoteSearchLoader.Error.invalidData
+        }
+        
+        return root.items
     }
 }
 
@@ -120,6 +169,38 @@ class RemoteSearchLoaderTests: XCTestCase {
         })
     }
     
+    func test_load_deliversItemsOn200HTTPResponseWithJSONItems() {
+        let (sut, client) = makeSUT()
+        
+        let item1 = makeItemSearch(
+            trackId: 1,
+            trackName: "a name",
+            primaryGenreName: "a primary genre name",
+            screenshotUrls: [URL(string: "https:a-url.com")!],
+            iconImage: anyURL
+        )
+        
+        let item2 = makeItemSearch(
+            trackId: 2,
+            trackName: "another name",
+            primaryGenreName: "another primary",
+            rate: 1.0,
+            screenshotUrls: [URL(string: "https:another-url.com")!],
+            iconImage: anyURL,
+            formattedPrice: "10.20",
+            description: "another description",
+            releaseNotes: "another release notes",
+            artistName: "another artist name",
+            collectionName: "another collection name")
+        
+        let items = [item1.model,item2.model]
+        
+        expect(sut, toCompleteWith: .success(items), when: {
+            let json = makeResultsJson([item1.json,item2.json])
+            client.complete(withStatusCode: 200,data: json)
+        })
+    }
+    
     // MARK:  Helpers
     
     private func makeSUT(
@@ -134,6 +215,51 @@ class RemoteSearchLoaderTests: XCTestCase {
         trackForMemoryLeaks(client,file: file,line: line)
         
         return (sut,client)
+    }
+    
+    private func makeItemSearch(
+        trackId: Int,
+        trackName: String,
+        primaryGenreName: String,
+        rate: Float? = nil,
+        screenshotUrls: [URL],
+        iconImage: URL,
+        formattedPrice: String? = nil,
+        description: String? = nil,
+        releaseNotes: String? = nil,
+        artistName: String? = nil,
+        collectionName: String? = nil
+    ) -> (model: SearchItem,json: [String: Any]) {
+        
+        let item = SearchItem(
+            trackId: trackId,
+            trackName: trackName,
+            primaryGenreName: primaryGenreName,
+            rate: rate,
+            screenshotUrls: screenshotUrls,
+            iconImage: iconImage,
+            formattedPrice: formattedPrice,
+            description: description,
+            releaseNotes: releaseNotes,
+            artistName: artistName,
+            collectionName: collectionName
+        )
+        
+        let json = [
+            "trackId": trackId,
+            "trackName": trackName,
+            "primaryGenreName": primaryGenreName,
+            "averageUserRating": rate,
+            "screenshotUrls": screenshotUrls.map { $0.absoluteString },
+            "artworkUrl100": iconImage.absoluteString,
+            "formattedPrice": formattedPrice,
+            "description": description,
+            "releaseNotes": releaseNotes,
+            "artistName": artistName,
+            "collectionName": collectionName
+        ].compactMapValues { $0 }
+        
+        return (item,json)
     }
     
     private func makeResultsJson(_ items: [[String: Any]]) -> Data {
