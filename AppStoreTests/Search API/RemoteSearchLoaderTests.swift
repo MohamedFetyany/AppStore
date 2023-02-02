@@ -263,14 +263,14 @@ class RemoteSearchLoaderTests: XCTestCase {
             "trackId": trackId,
             "trackName": trackName,
             "primaryGenreName": primaryGenreName,
-            "averageUserRating": rate,
+            "averageUserRating": rate as Any,
             "screenshotUrls": screenshotUrls.map { $0.absoluteString },
             "artworkUrl100": iconImage.absoluteString,
-            "formattedPrice": formattedPrice,
-            "description": description,
-            "releaseNotes": releaseNotes,
-            "artistName": artistName,
-            "collectionName": collectionName
+            "formattedPrice": formattedPrice as Any,
+            "description": description as Any,
+            "releaseNotes": releaseNotes as Any,
+            "artistName": artistName as Any,
+            "collectionName": collectionName as Any
         ].compactMapValues { $0 }
         
         return (item,json)
