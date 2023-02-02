@@ -19,6 +19,7 @@
 		B5B0D4CE28D64222003C57FE /* UIController+Simulate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B0D4CD28D64222003C57FE /* UIController+Simulate.swift */; };
 		B5B0D4D128D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B0D4D028D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift */; };
 		DD52BAE6298BDA1A0053CB47 /* RemoteSearchLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD52BAE5298BDA1A0053CB47 /* RemoteSearchLoader.swift */; };
+		DD52BAE8298BDA960053CB47 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD52BAE7298BDA960053CB47 /* HTTPClient.swift */; };
 		DDF7B946298118DF00CD8E3A /* SearchItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF7B945298118DF00CD8E3A /* SearchItem.swift */; };
 		DDF7B948298119D600CD8E3A /* SearchLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF7B947298119D600CD8E3A /* SearchLoader.swift */; };
 		DDF7B94B29811ABA00CD8E3A /* RemoteSearchLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF7B94A29811ABA00CD8E3A /* RemoteSearchLoaderTests.swift */; };
@@ -50,6 +51,7 @@
 		B5B0D4CD28D64222003C57FE /* UIController+Simulate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIController+Simulate.swift"; sourceTree = "<group>"; };
 		B5B0D4D028D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		DD52BAE5298BDA1A0053CB47 /* RemoteSearchLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSearchLoader.swift; sourceTree = "<group>"; };
+		DD52BAE7298BDA960053CB47 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		DDF7B945298118DF00CD8E3A /* SearchItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchItem.swift; sourceTree = "<group>"; };
 		DDF7B947298119D600CD8E3A /* SearchLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLoader.swift; sourceTree = "<group>"; };
 		DDF7B94A29811ABA00CD8E3A /* RemoteSearchLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSearchLoaderTests.swift; sourceTree = "<group>"; };
@@ -188,6 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				DD52BAE5298BDA1A0053CB47 /* RemoteSearchLoader.swift */,
+				DD52BAE7298BDA960053CB47 /* HTTPClient.swift */,
 			);
 			path = "Search API";
 			sourceTree = "<group>";
@@ -311,6 +314,7 @@
 			files = (
 				B553674A28A359F20024AC53 /* SearchViewController.swift in Sources */,
 				B553674628A359F20024AC53 /* AppDelegate.swift in Sources */,
+				DD52BAE8298BDA960053CB47 /* HTTPClient.swift in Sources */,
 				DDF7B948298119D600CD8E3A /* SearchLoader.swift in Sources */,
 				B57B8DD528A3FACA00D2483F /* SFSymbole.swift in Sources */,
 				DD52BAE6298BDA1A0053CB47 /* RemoteSearchLoader.swift in Sources */,
