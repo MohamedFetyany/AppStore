@@ -18,6 +18,7 @@
 		B57B8DDB28A42B4A00D2483F /* SearchViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B57B8DDA28A42B4A00D2483F /* SearchViewControllerTests.swift */; };
 		B5B0D4CE28D64222003C57FE /* UIController+Simulate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B0D4CD28D64222003C57FE /* UIController+Simulate.swift */; };
 		B5B0D4D128D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B0D4D028D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift */; };
+		DD52BAE6298BDA1A0053CB47 /* RemoteSearchLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD52BAE5298BDA1A0053CB47 /* RemoteSearchLoader.swift */; };
 		DDF7B946298118DF00CD8E3A /* SearchItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF7B945298118DF00CD8E3A /* SearchItem.swift */; };
 		DDF7B948298119D600CD8E3A /* SearchLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF7B947298119D600CD8E3A /* SearchLoader.swift */; };
 		DDF7B94B29811ABA00CD8E3A /* RemoteSearchLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF7B94A29811ABA00CD8E3A /* RemoteSearchLoaderTests.swift */; };
@@ -48,6 +49,7 @@
 		B57B8DDA28A42B4A00D2483F /* SearchViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewControllerTests.swift; sourceTree = "<group>"; };
 		B5B0D4CD28D64222003C57FE /* UIController+Simulate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIController+Simulate.swift"; sourceTree = "<group>"; };
 		B5B0D4D028D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
+		DD52BAE5298BDA1A0053CB47 /* RemoteSearchLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSearchLoader.swift; sourceTree = "<group>"; };
 		DDF7B945298118DF00CD8E3A /* SearchItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchItem.swift; sourceTree = "<group>"; };
 		DDF7B947298119D600CD8E3A /* SearchLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLoader.swift; sourceTree = "<group>"; };
 		DDF7B94A29811ABA00CD8E3A /* RemoteSearchLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSearchLoaderTests.swift; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 		B553674428A359F20024AC53 /* AppStore */ = {
 			isa = PBXGroup;
 			children = (
+				DD52BAE4298BDA070053CB47 /* Search API */,
 				DDF7B944298118B100CD8E3A /* Search Feature */,
 				B57B8DD228A3F5CD00D2483F /* Composition Root */,
 				B57B8DD628A3FAE200D2483F /* UI */,
@@ -179,6 +182,14 @@
 				B5B0D4D028D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		DD52BAE4298BDA070053CB47 /* Search API */ = {
+			isa = PBXGroup;
+			children = (
+				DD52BAE5298BDA1A0053CB47 /* RemoteSearchLoader.swift */,
+			);
+			path = "Search API";
 			sourceTree = "<group>";
 		};
 		DDF7B944298118B100CD8E3A /* Search Feature */ = {
@@ -302,6 +313,7 @@
 				B553674628A359F20024AC53 /* AppDelegate.swift in Sources */,
 				DDF7B948298119D600CD8E3A /* SearchLoader.swift in Sources */,
 				B57B8DD528A3FACA00D2483F /* SFSymbole.swift in Sources */,
+				DD52BAE6298BDA1A0053CB47 /* RemoteSearchLoader.swift in Sources */,
 				B553674828A359F20024AC53 /* SceneDelegate.swift in Sources */,
 				DDF7B946298118DF00CD8E3A /* SearchItem.swift in Sources */,
 			);
