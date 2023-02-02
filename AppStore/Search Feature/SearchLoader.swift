@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum LoadSearchResult {
+public enum LoadSearchResult {
     case success([SearchItem])
     case failure(Error)
 }

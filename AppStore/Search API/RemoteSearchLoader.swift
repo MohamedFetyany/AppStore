@@ -14,10 +14,7 @@ public class RemoteSearchLoader {
         case invalidData
     }
     
-    public enum Result {
-        case success([SearchItem])
-        case failure(Error)
-    }
+    public typealias Result = LoadSearchResult
     
     private let url: URL
     private let client: HTTPClient
@@ -33,17 +30,20 @@ public class RemoteSearchLoader {
             
             switch result {
             case let .success(data,response):
-                do {
-                    let items = try SearchItemsMapper.map(data: data, from: response)
-                    completion(.success(items))
-                } catch {
-                    completion(.failure(.invalidData))
-                }
-                
+                completion(Self.map(data, from: response))
+               
             case .failure:
-                completion(.failure(.connectivity))
+                completion(.failure(Error.connectivity))
             }
-            
+        }
+    }
+    
+    private static func map(_ data: Data,from response: HTTPURLResponse) -> Result {
+        do {
+            let items = try SearchItemsMapper.map(data: data, from: response)
+            return .success(items)
+        } catch {
+            return .failure(error)
         }
     }
 }
