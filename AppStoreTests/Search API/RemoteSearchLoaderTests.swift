@@ -306,7 +306,7 @@ class RemoteSearchLoaderTests: XCTestCase {
                 XCTAssertEqual(receivedError , expectedError,file: file,line: line)
                 
             default:
-                XCTFail("Expected result \(expectedResult) but got \(receivedResult) instead",file: file,line: line)
+                XCTFail("Expected result \(expectedResult), got \(receivedResult) instead",file: file,line: line)
             }
             
             exp.fulfill()
@@ -346,12 +346,13 @@ class RemoteSearchLoaderTests: XCTestCase {
             data: Data = Data(),
             at index: Int = 0
         ) {
-            let response = HTTPURLResponse(url: URL(string: "https://any-given-url.com")!,
-                                           statusCode: code,
-                                           httpVersion: nil,
-                                           headerFields: nil)!
+            let response = HTTPURLResponse(
+                url: URL(string: "https://any-given-url.com")!,
+                statusCode: code,
+                httpVersion: nil,
+                headerFields: nil
+            )!
             messages[index].completion(.success(data,response))
         }
     }
-    
 }
