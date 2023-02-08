@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import AppStore
 
 class URLSessionHTTPClient {
     
@@ -15,8 +16,12 @@ class URLSessionHTTPClient {
         self.session = session
     }
     
-    func get(from url: URL) {
-        session.dataTask(with: url) { _, _, _ in }.resume()
+    func get(from url: URL,comletion: @escaping ((HTTPClientResult) -> Void)) {
+        session.dataTask(with: url) { _, _, error in
+            if let error {
+                comletion(.failure(error))
+            }
+        }.resume()
     }
 }
 
@@ -29,27 +34,57 @@ class URLSessionHTTPClientTests: XCTestCase {
         session.stub(url: url,with: task)
         let sut = URLSessionHTTPClient(session: session)
         
-        sut.get(from: url)
+        sut.get(from: url) { _ in }
         
         XCTAssertEqual(task.resumeCallCount,1)
+    }
+    
+    func test_getFromURL_failsOnClientError() {
+        let clientError = NSError(domain: "any error", code: 1)
+        let url = URL(string: "https://any-url.com")!
+        let session = URLSessionSpy()
+        session.stub(url: url,error: clientError)
+        let sut = URLSessionHTTPClient(session: session)
+        
+        let exp = expectation(description: "Wait for completion")
+        sut.get(from: url) { result in
+            switch result {
+            case let .failure(receivedError as NSError):
+                XCTAssertEqual(receivedError.domain, clientError.domain)
+                XCTAssertEqual(receivedError.code, clientError.code)
+                
+            default:
+                XCTFail("Expected failure with error \(clientError), got \(result) instead")
+            }
+            
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 0.01)
     }
     
     // MARK:  Helpers
     
     private class URLSessionSpy: URLSession {
         
-        var receivedURLs = [URL]()
+        private var stubs = [URL: Stub]()
         
-        var stub = [URL: URLSessionDataTask]()
+        private struct Stub {
+            let task: URLSessionDataTask
+            let error: Error?
+        }
         
-        func stub(url: URL,with task: URLSessionDataTask) {
-            stub[url] = task
+        func stub(url: URL,with task: URLSessionDataTask = FakeURLSessionDataTask(),error: Error? = nil) {
+            stubs[url] = Stub(task: task, error: error)
         }
         
         override func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
-            receivedURLs.append(url)
+            guard let stub = stubs[url] else {
+                fatalError("couldn't find stub for \(url)")
+            }
             
-            return stub[url] ?? FakeURLSessionDataTask()
+            completionHandler(nil,nil,stub.error)
+            return stub.task
         }
     
     }
