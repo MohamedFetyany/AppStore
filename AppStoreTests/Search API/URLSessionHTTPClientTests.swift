@@ -68,10 +68,6 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
     
     func test_getFromURL_failsOnAllInvalidRepresentationCases() {
-        let anyData = Data("any data".utf8)
-        let nonHTTPURLResponse = URLResponse(url: anyURL, mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
-        let anyHTTPURLResponse = HTTPURLResponse(url: anyURL, statusCode: 200, httpVersion: nil, headerFields: nil)
-        
         XCTAssertNotNil(resultErrorFor(data: nil, response: nil, error: nil))
         XCTAssertNotNil(resultErrorFor(data: nil, response: nonHTTPURLResponse, error: nil))
         XCTAssertNotNil(resultErrorFor(data: nil, response: anyHTTPURLResponse, error: nil))
@@ -122,6 +118,18 @@ class URLSessionHTTPClientTests: XCTestCase {
         wait(for: [exp], timeout: 0.01)
         
         return receivedError
+    }
+    
+    var anyData: Data {
+        Data("any data".utf8)
+    }
+    
+    var nonHTTPURLResponse: URLResponse {
+        URLResponse(url: anyURL, mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
+    }
+    
+    var anyHTTPURLResponse: HTTPURLResponse {
+        HTTPURLResponse(url: anyURL, statusCode: 200, httpVersion: nil, headerFields: nil)!
     }
     
     private class URLProtocolStub: URLProtocol {
