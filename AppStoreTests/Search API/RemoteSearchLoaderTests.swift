@@ -220,14 +220,6 @@ class RemoteSearchLoaderTests: XCTestCase {
         wait(for: [exp], timeout: 0.01)
     }
     
-    private var anyURL: URL {
-        URL(string: "https://any-given-url.com")!
-    }
-    
-    private var anyNSError: NSError {
-        NSError(domain: "any error", code: 1)
-    }
-    
     private class HTTPClientSpy: HTTPClient {
         
         private(set) var messages = [(url: URL,completion: (HTTPClientResult) -> Void)]()
