@@ -23,6 +23,7 @@
 		DD52BAEA298BDAC20053CB47 /* SearchItemsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD52BAE9298BDAC20053CB47 /* SearchItemsMapper.swift */; };
 		DDE747A22993648700E540B7 /* URLSessionHTTPClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE747A12993648700E540B7 /* URLSessionHTTPClientTests.swift */; };
 		DDE747C62994C2AB00E540B7 /* SharedTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE747C52994C2AB00E540B7 /* SharedTestHelpers.swift */; };
+		DDF46EFF299B645100A361B6 /* URLSessionHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF46EFE299B645100A361B6 /* URLSessionHTTPClient.swift */; };
 		DDF7B946298118DF00CD8E3A /* SearchItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF7B945298118DF00CD8E3A /* SearchItem.swift */; };
 		DDF7B948298119D600CD8E3A /* SearchLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF7B947298119D600CD8E3A /* SearchLoader.swift */; };
 		DDF7B94B29811ABA00CD8E3A /* RemoteSearchLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF7B94A29811ABA00CD8E3A /* RemoteSearchLoaderTests.swift */; };
@@ -58,6 +59,7 @@
 		DD52BAE9298BDAC20053CB47 /* SearchItemsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchItemsMapper.swift; sourceTree = "<group>"; };
 		DDE747A12993648700E540B7 /* URLSessionHTTPClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionHTTPClientTests.swift; sourceTree = "<group>"; };
 		DDE747C52994C2AB00E540B7 /* SharedTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedTestHelpers.swift; sourceTree = "<group>"; };
+		DDF46EFE299B645100A361B6 /* URLSessionHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionHTTPClient.swift; sourceTree = "<group>"; };
 		DDF7B945298118DF00CD8E3A /* SearchItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchItem.swift; sourceTree = "<group>"; };
 		DDF7B947298119D600CD8E3A /* SearchLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLoader.swift; sourceTree = "<group>"; };
 		DDF7B94A29811ABA00CD8E3A /* RemoteSearchLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSearchLoaderTests.swift; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 				DD52BAE5298BDA1A0053CB47 /* RemoteSearchLoader.swift */,
 				DD52BAE9298BDAC20053CB47 /* SearchItemsMapper.swift */,
 				DD52BAE7298BDA960053CB47 /* HTTPClient.swift */,
+				DDF46EFE299B645100A361B6 /* URLSessionHTTPClient.swift */,
 			);
 			path = "Search API";
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD52BAEA298BDAC20053CB47 /* SearchItemsMapper.swift in Sources */,
+				DDF46EFF299B645100A361B6 /* URLSessionHTTPClient.swift in Sources */,
 				B553674A28A359F20024AC53 /* SearchViewController.swift in Sources */,
 				B553674628A359F20024AC53 /* AppDelegate.swift in Sources */,
 				DD52BAE8298BDA960053CB47 /* HTTPClient.swift in Sources */,
