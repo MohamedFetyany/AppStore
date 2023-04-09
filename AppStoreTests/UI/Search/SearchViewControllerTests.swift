@@ -28,7 +28,9 @@ private class SearchViewController: UIViewController, UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         loadingView.startAnimating()
-        loader?.load(query: "", completion: { _ in })
+        loader?.load(query: "", completion: { [weak self] _ in
+            self?.loadingView.stopAnimating()
+        })
     }
 }
 
@@ -55,7 +57,16 @@ class SearchViewControllerTests: XCTestCase {
         
         sut.simulateUserSearch("any query")
         
-        XCTAssertEqual(sut.loadingView.isAnimating, true)
+        XCTAssertEqual(sut.isShowLoadingIndicator, true)
+    }
+    
+    func test_searching_hidesLoadingIndicatoOnLoaderCompletion() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch("any query")
+        loader.completeSearchLoading(at: 0)
+        
+        XCTAssertEqual(sut.isShowLoadingIndicator, false)
     }
     
     //MARK: - Helper
@@ -73,15 +84,28 @@ class SearchViewControllerTests: XCTestCase {
     }
     
     class LoaderSpy: SearchLoader {
-        private(set) var loadCallCount: Int = 0
+        
+        private var completions = [(LoadSearchResult) -> Void]()
+        
+        var loadCallCount: Int {
+            completions.count
+        }
         
         func load(query: String, completion: @escaping ((LoadSearchResult) -> Void)) {
-            loadCallCount += 1
+            completions.append(completion)
+        }
+        
+        func completeSearchLoading(at index: Int) {
+            completions[index](.success([]))
         }
     }
 }
 
 private extension SearchViewController {
+    
+    var isShowLoadingIndicator: Bool {
+        loadingView.isAnimating
+    }
     
     func simulateUserSearch(_ query: String) {
         searchViewController.searchBar.delegate?.searchBar?(searchViewController.searchBar, textDidChange: query)
