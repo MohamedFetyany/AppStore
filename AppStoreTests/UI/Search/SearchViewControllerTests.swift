@@ -41,14 +41,19 @@ class SearchViewControllerTests: XCTestCase {
         let (sut, loader) = makeSUT()
         
         sut.simulateUserSearch("any query")
-        
         XCTAssertEqual(loader.loadCallCount, 1)
+        
+        sut.simulateUserSearch("any query")
+        XCTAssertEqual(loader.loadCallCount, 2)
     }
     
     
     //MARK: - Helper
     
-    private func makeSUT(file: StaticString = #file,line: UInt = #line) -> (sut: SearchViewController,loader: LoaderSpy) {
+    private func makeSUT(
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) -> (sut: SearchViewController,loader: LoaderSpy) {
         let loader = LoaderSpy()
         let sut = SearchViewController(loader: loader)
         sut.loadViewIfNeeded()
@@ -64,7 +69,6 @@ class SearchViewControllerTests: XCTestCase {
             loadCallCount += 1
         }
     }
-
 }
 
 private extension SearchViewController {
