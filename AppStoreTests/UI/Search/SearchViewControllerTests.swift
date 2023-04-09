@@ -36,37 +36,33 @@ private class SearchViewController: UIViewController, UISearchBarDelegate {
 
 class SearchViewControllerTests: XCTestCase {
     
-    func test_init_doesNotLoadSearch() {
-        let (_ ,loader) = makeSUT()
+    func test_searching_requestsSearchFromLoader() {
+        let (sut ,loader) = makeSUT()
         
-        XCTAssertEqual(loader.loadCallCount, 0)
+        XCTAssertEqual(loader.loadCallCount, 0,"Expected no loading requests before view is loaded")
+        
+        sut.simulateUserSearch(anyQuery)
+        XCTAssertEqual(loader.loadCallCount, 1,"Expected a loading request once user searching")
+        
+        sut.simulateUserSearch(anyQuery)
+        XCTAssertEqual(loader.loadCallCount, 2,"Expected another loading request once user searching again")
     }
     
-    func test_userTyping_loadsSearch() {
+    func test_loadingSearchIndicator_isVisibleWhileLoadingSearch() {
         let (sut, loader) = makeSUT()
+        XCTAssertEqual(sut.isShowLoadingIndicator, false,"Expected no loading indicator one load view")
         
-        sut.simulateUserSearch("any query")
-        XCTAssertEqual(loader.loadCallCount, 1)
+        sut.simulateUserSearch(anyQuery)
+        XCTAssertEqual(sut.isShowLoadingIndicator, true,"Expected loading indicator once loading search")
         
-        sut.simulateUserSearch("any query")
-        XCTAssertEqual(loader.loadCallCount, 2)
-    }
-    
-    func test_searching_showsLoadingIndicator() {
-        let (sut, _) = makeSUT()
-        
-        sut.simulateUserSearch("any query")
-        
-        XCTAssertEqual(sut.isShowLoadingIndicator, true)
-    }
-    
-    func test_searching_hidesLoadingIndicatoOnLoaderCompletion() {
-        let (sut, loader) = makeSUT()
-        
-        sut.simulateUserSearch("any query")
         loader.completeSearchLoading(at: 0)
+        XCTAssertEqual(sut.isShowLoadingIndicator, false,"Expected no loading indicator once requests completes with success")
         
-        XCTAssertEqual(sut.isShowLoadingIndicator, false)
+        sut.simulateUserSearch(anyQuery)
+        XCTAssertEqual(sut.isShowLoadingIndicator, true,"Expected another loading indicator once loading search again ")
+        
+        loader.completeSearchLoadingWithError(at: 1)
+        XCTAssertEqual(sut.isShowLoadingIndicator, false,"Expected no loading indicator once requests completes with error")
     }
     
     //MARK: - Helper
@@ -83,7 +79,11 @@ class SearchViewControllerTests: XCTestCase {
         return (sut,loader)
     }
     
-    class LoaderSpy: SearchLoader {
+    private var anyQuery: String {
+        "any query"
+    }
+    
+    private class LoaderSpy: SearchLoader {
         
         private var completions = [(LoadSearchResult) -> Void]()
         
@@ -97,6 +97,11 @@ class SearchViewControllerTests: XCTestCase {
         
         func completeSearchLoading(at index: Int) {
             completions[index](.success([]))
+        }
+        
+        func completeSearchLoadingWithError(at index: Int) {
+            let error = NSError(domain: "any error", code: 0)
+            completions[index](.failure(error))
         }
     }
 }
