@@ -11,7 +11,7 @@ import AppStore
 private class SearchViewController: UIViewController, UISearchBarDelegate {
     
     private(set) lazy var searchViewController = UISearchController()
-    private(set) var loadingView = UIActivityIndicatorView(style: .medium)
+    private(set) var loadingIndicator = UIActivityIndicatorView(style: .medium)
     
     private var loader: SearchLoader?
     
@@ -27,9 +27,9 @@ private class SearchViewController: UIViewController, UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        loadingView.startAnimating()
+        loadingIndicator.startAnimating()
         loader?.load(query: "", completion: { [weak self] _ in
-            self?.loadingView.stopAnimating()
+            self?.loadingIndicator.stopAnimating()
         })
     }
 }
@@ -104,7 +104,7 @@ class SearchViewControllerTests: XCTestCase {
 private extension SearchViewController {
     
     var isShowLoadingIndicator: Bool {
-        loadingView.isAnimating
+        loadingIndicator.isAnimating
     }
     
     func simulateUserSearch(_ query: String) {
