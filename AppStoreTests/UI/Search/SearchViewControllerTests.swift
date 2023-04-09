@@ -6,14 +6,15 @@
 //
 
 import XCTest
+import AppStore
 
 private class SearchViewController: UIViewController, UISearchBarDelegate {
     
     private(set) lazy var searchViewController = UISearchController()
     
-    private var loader: SearchViewControllerTests.LoaderSpy?
+    private var loader: SearchLoader?
     
-    convenience init(loader: SearchViewControllerTests.LoaderSpy) {
+    convenience init(loader: SearchLoader) {
         self.init()
         self.loader = loader
     }
@@ -25,7 +26,7 @@ private class SearchViewController: UIViewController, UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        loader?.loadSearch()
+        loader?.load(query: "", completion: { _ in })
     }
 }
 
@@ -62,10 +63,10 @@ class SearchViewControllerTests: XCTestCase {
         return (sut,loader)
     }
     
-    class LoaderSpy {
+    class LoaderSpy: SearchLoader {
         private(set) var loadCallCount: Int = 0
         
-        func loadSearch() {
+        func load(query: String, completion: @escaping ((LoadSearchResult) -> Void)) {
             loadCallCount += 1
         }
     }
