@@ -8,32 +8,6 @@
 import XCTest
 import AppStore
 
-private class SearchViewController: UIViewController, UISearchBarDelegate {
-    
-    private(set) lazy var searchViewController = UISearchController()
-    private(set) var loadingIndicator = UIActivityIndicatorView(style: .medium)
-    
-    private var loader: SearchLoader?
-    
-    convenience init(loader: SearchLoader) {
-        self.init()
-        self.loader = loader
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        searchViewController.searchBar.delegate = self
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        loadingIndicator.startAnimating()
-        loader?.load(query: "", completion: { [weak self] _ in
-            self?.loadingIndicator.stopAnimating()
-        })
-    }
-}
-
 class SearchViewControllerTests: XCTestCase {
     
     func test_searching_requestsSearchFromLoader() {
