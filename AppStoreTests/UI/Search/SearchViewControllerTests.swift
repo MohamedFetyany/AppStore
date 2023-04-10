@@ -39,6 +39,24 @@ class SearchViewControllerTests: XCTestCase {
         XCTAssertEqual(sut.isShowLoadingIndicator, false,"Expected no loading indicator once requests completes with error")
     }
     
+    func test_loadSearchCompletion_rendersSuccessfullyLoadedSearch() {
+        let search0 = makeSearchItem(id: 1, name: "a name", category: "a category",rate: nil)
+        let search1 = makeSearchItem(id: 2, name: "anthor name", category: "anthor category",rate: 5.3)
+        let search2 = makeSearchItem(id: 3, name: "any name", category: "any category",rate: 6.8)
+        let (sut, loader) =  makeSUT()
+        
+        XCTAssertEqual(sut.numberOfRenderedSearchView, 0)
+        assertThat(sut, isRendering: [])
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [search0], at: 0)
+        assertThat(sut, isRendering: [search0])
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [search0,search1,search2], at: 1)
+        assertThat(sut, isRendering: [search0,search1,search2])
+    }
+    
     //MARK: - Helper
     
     private func makeSUT(
@@ -53,24 +71,76 @@ class SearchViewControllerTests: XCTestCase {
         return (sut,loader)
     }
     
+    private func assertThat(
+        _ sut: SearchViewController,
+        isRendering items: [SearchItem],
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        guard sut.numberOfRenderedSearchView == items.count else {
+            return XCTFail("Expected \(items.count) search, got \(sut.numberOfRenderedSearchView) instead",file: file,line: line)
+        }
+        
+        items.enumerated().forEach { index, item in
+            assertThat(sut, hasViewConfiguredFor: item, at: index,file: file,line: line)
+        }
+    }
+    
+    private func assertThat(
+        _ sut: SearchViewController,
+        hasViewConfiguredFor search: SearchItem,
+        at index: Int,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let view = sut.searchItemView(at: index)
+        
+        guard let cell = view as? SearchItemCell else {
+            return XCTFail("Expected \(SearchItemCell.self) instance, got \(String(describing: view)) instead",file: file,line: line)
+        }
+        
+        XCTAssertEqual(cell.nameText, search.category,"Expected name text to be \(String(describing: search.category)) for search view at index \(index)",file: file,line: line)
+        XCTAssertEqual(cell.categoryText, search.category,"Expected category text to be \(String(describing: search.category)) for search view at index \(index)",file: file,line: line)
+        XCTAssertEqual(cell.rateText, search.ratingText,"Expected rating text to be \(String(describing: search.ratingText)) for search view at index \(index)",file: file,line: line)
+    }
+    
+    private func makeSearchItem(
+        id: Int,
+        name: String,
+        category: String,
+        rate: Float? = nil,
+        urls: [URL] = [URL(string: "https://url-1.com")!,URL(string: "https://url-2.com")!],
+        iconURL: URL = URL(string: "https://url-icon.com")!
+    ) -> SearchItem {
+        .init(id: id, name: name, category: category,rate: rate, urls: urls, urlIcon: iconURL)
+    }
+    
     private var anyQuery: String {
         "any query"
     }
     
+    private var url1: URL {
+        URL(string: "https://url-1.com")!
+    }
+    
+    private var url2: URL {
+        URL(string: "https://url-2.com")!
+    }
+    
     private class LoaderSpy: SearchLoader {
         
-        private var completions = [(LoadSearchResult) -> Void]()
+        private var completions = [(SearchLoader.Result) -> Void]()
         
         var loadCallCount: Int {
             completions.count
         }
         
-        func load(query: String, completion: @escaping ((LoadSearchResult) -> Void)) {
+        func load(query: String, completion: @escaping ((SearchLoader.Result) -> Void)) {
             completions.append(completion)
         }
         
-        func completeSearchLoading(at index: Int) {
-            completions[index](.success([]))
+        func completeSearchLoading(with items: [SearchItem] = [],at index: Int) {
+            completions[index](.success(items))
         }
         
         func completeSearchLoadingWithError(at index: Int) {
@@ -82,11 +152,41 @@ class SearchViewControllerTests: XCTestCase {
 
 private extension SearchViewController {
     
+    
+    func searchItemView(at item: Int) -> UICollectionViewCell? {
+        let ds = collectionView.dataSource
+        let index = IndexPath(item: item, section: searchSection)
+        return ds?.collectionView(collectionView, cellForItemAt: index)
+    }
+    
+    var numberOfRenderedSearchView: Int {
+        collectionView.numberOfItems(inSection: searchSection)
+    }
+    
+    private var searchSection: Int {
+        0
+    }
+    
     var isShowLoadingIndicator: Bool {
         loadingIndicator.isAnimating
     }
     
     func simulateUserSearch(_ query: String) {
         searchViewController.searchBar.delegate?.searchBar?(searchViewController.searchBar, textDidChange: query)
+    }
+}
+
+private extension SearchItemCell {
+    
+    var nameText: String? {
+        nameLabel.text
+    }
+    
+    var categoryText: String? {
+        categoryLabel.text
+    }
+    
+    var rateText: String? {
+        rateLabel.text
     }
 }

@@ -8,41 +8,30 @@
 import Foundation
 
 public struct SearchItem: Equatable {
-    public let trackId: Int
-    public let trackName: String
-    public let primaryGenreName: String
+    public let id: Int
+    public let name: String
+    public let category: String
     public let rate: Float?
-    public let screenshotUrls: [URL]
-    public let iconImage: URL
-    public let formattedPrice: String?
-    public let description: String?
-    public let releaseNotes: String?
-    public let artistName: String?
-    public let collectionName: String?
+    public let urls: [URL]
+    public let urlIcon: URL
     
     public init(
-        trackId: Int,
-        trackName: String,
-        primaryGenreName: String,
+        id: Int,
+        name: String,
+        category: String,
         rate: Float? = nil,
-        screenshotUrls: [URL],
-        iconImage: URL,
-        formattedPrice: String? = nil,
-        description: String? = nil,
-        releaseNotes: String? = nil,
-        artistName: String? = nil,
-        collectionName: String? = nil
+        urls: [URL],
+        urlIcon: URL
     ) {
-        self.trackId = trackId
-        self.trackName = trackName
-        self.primaryGenreName = primaryGenreName
+        self.id = id
+        self.name = name
+        self.category = category
         self.rate = rate
-        self.screenshotUrls = screenshotUrls
-        self.iconImage = iconImage
-        self.formattedPrice = formattedPrice
-        self.description = description
-        self.releaseNotes = releaseNotes
-        self.artistName = artistName
-        self.collectionName = collectionName
+        self.urls = urls
+        self.urlIcon = urlIcon
+    }
+    
+    public var ratingText: String {
+        "Rating: \(rate ?? 0)"
     }
 }

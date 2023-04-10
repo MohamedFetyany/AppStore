@@ -90,12 +90,8 @@ class RemoteSearchLoaderTests: XCTestCase {
             primaryGenreName: "another primary",
             rate: 1.0,
             screenshotUrls: [URL(string: "https:another-url.com")!],
-            iconImage: anyURL,
-            formattedPrice: "10.20",
-            description: "another description",
-            releaseNotes: "another release notes",
-            artistName: "another artist name",
-            collectionName: "another collection name")
+            iconImage: anyURL
+        )
         
         let items = [item1.model,item2.model]
         
@@ -140,26 +136,16 @@ class RemoteSearchLoaderTests: XCTestCase {
         primaryGenreName: String,
         rate: Float? = nil,
         screenshotUrls: [URL],
-        iconImage: URL,
-        formattedPrice: String? = nil,
-        description: String? = nil,
-        releaseNotes: String? = nil,
-        artistName: String? = nil,
-        collectionName: String? = nil
+        iconImage: URL
     ) -> (model: SearchItem,json: [String: Any]) {
         
         let item = SearchItem(
-            trackId: trackId,
-            trackName: trackName,
-            primaryGenreName: primaryGenreName,
+            id: trackId,
+            name: trackName,
+            category: primaryGenreName,
             rate: rate,
-            screenshotUrls: screenshotUrls,
-            iconImage: iconImage,
-            formattedPrice: formattedPrice,
-            description: description,
-            releaseNotes: releaseNotes,
-            artistName: artistName,
-            collectionName: collectionName
+            urls: screenshotUrls,
+            urlIcon: iconImage
         )
         
         let json = [
@@ -168,12 +154,7 @@ class RemoteSearchLoaderTests: XCTestCase {
             "primaryGenreName": primaryGenreName,
             "averageUserRating": rate as Any,
             "screenshotUrls": screenshotUrls.map { $0.absoluteString },
-            "artworkUrl100": iconImage.absoluteString,
-            "formattedPrice": formattedPrice as Any,
-            "description": description as Any,
-            "releaseNotes": releaseNotes as Any,
-            "artistName": artistName as Any,
-            "collectionName": collectionName as Any
+            "artworkUrl100": iconImage.absoluteString
         ].compactMapValues { $0 }
         
         return (item,json)

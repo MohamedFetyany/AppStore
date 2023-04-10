@@ -14,7 +14,7 @@ public class RemoteSearchLoader {
         case invalidData
     }
     
-    public typealias Result = LoadSearchResult
+    public typealias Result = SearchLoader.Result
     
     private let url: URL
     private let client: HTTPClient

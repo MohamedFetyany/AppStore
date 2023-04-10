@@ -30,17 +30,12 @@ final class SearchItemsMapper: Decodable {
         
         var item: SearchItem {
             SearchItem(
-                trackId: trackId,
-                trackName: trackName,
-                primaryGenreName: primaryGenreName,
+                id: trackId,
+                name: trackName,
+                category: primaryGenreName,
                 rate: averageUserRating,
-                screenshotUrls: screenshotUrls,
-                iconImage: artworkUrl100,
-                formattedPrice: formattedPrice,
-                description: description,
-                releaseNotes: releaseNotes,
-                artistName: artistName,
-                collectionName: collectionName
+                urls: screenshotUrls,
+                urlIcon: artworkUrl100
             )
         }
     }
