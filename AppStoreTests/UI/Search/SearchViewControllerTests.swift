@@ -70,14 +70,13 @@ class SearchViewControllerTests: XCTestCase {
         assertThat(sut, isRendering: [search0])
     }
     
-    func test_feedIconView_loadsImageURLWhenVisible() {
+    func test_searchIconView_loadsImageURLWhenVisible() {
         let search0 = makeSearchItem(id: 1, name: "", category: "",iconURL: URL(string: "https://url-0.com")!)
         let search1 = makeSearchItem(id: 2, name: "", category: "",iconURL: URL(string: "https://url-1.com")!)
         let (sut, loader) = makeSUT()
         
         sut.simulateUserSearch(anyQuery)
         loader.completeSearchLoading(with: [search0,search1], at: 0)
-        
         XCTAssertEqual(loader.loadedIconURLs, [],"Expeced no icon URL requsts until views becomes visible")
 
         sut.simulateSearchViewVisible(at: 0)
@@ -85,6 +84,22 @@ class SearchViewControllerTests: XCTestCase {
         
         sut.simulateSearchViewVisible(at: 1)
         XCTAssertEqual(loader.loadedIconURLs, [search0.urlIcon,search1.urlIcon],"Expected second image URL request once second view also becomes visible")
+    }
+    
+    func test_searchIconView_cancelsImageLoadingWhenNotVisibleAnyMore() {
+        let search0 = makeSearchItem(id: 1, name: "", category: "",iconURL: URL(string: "https://url-0.com")!)
+        let search1 = makeSearchItem(id: 2, name: "", category: "",iconURL: URL(string: "https://url-1.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [search0,search1], at: 0)
+        XCTAssertEqual(loader.cancelledIconURLs, [],"Expected no cancelled icon URL requests until icon is not visible")
+
+        sut.simulateSearchViewNotVisible(at: 0)
+        XCTAssertEqual(loader.cancelledIconURLs, [search0.urlIcon],"Expected one cancelled image URL request once first icon is not visible anymore")
+        
+        sut.simulateSearchViewNotVisible(at: 1)
+        XCTAssertEqual(loader.cancelledIconURLs, [search0.urlIcon,search1.urlIcon],"Expected two cancelled icon URL requests once second icon is also not visible anymore")
     }
     
     //MARK: - Helper
@@ -184,13 +199,27 @@ class SearchViewControllerTests: XCTestCase {
         
         var loadedIconURLs = [URL]()
         
+        var cancelledIconURLs = [URL]()
+        
         func loadIconData(from url: URL) {
             loadedIconURLs.append(url)
+        }
+        
+        func cancelIconDataLoad(from url: URL) {
+            cancelledIconURLs.append(url)
         }
     }
 }
 
 private extension SearchViewController {
+    
+    func simulateSearchViewNotVisible(at row: Int) {
+        let view = searchItemView(at: row)
+        
+        let delegate = collectionView.delegate
+        let index = IndexPath(row: row, section: searchSection)
+        delegate?.collectionView?(collectionView, didEndDisplaying: view!, forItemAt: index)
+    }
     
     func simulateSearchViewVisible(at row: Int) {
         _ = searchItemView(at: row)

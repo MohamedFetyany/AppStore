@@ -9,6 +9,7 @@ import UIKit
 
 public protocol SearchIconDataLoader {
     func loadIconData(from url: URL)
+    func cancelIconDataLoad(from url: URL)
 }
 
 public final class SearchViewController: UIViewController {
@@ -36,7 +37,7 @@ public final class SearchViewController: UIViewController {
         super.viewDidLoad()
         
         collectionView.dataSource = self
-        
+        collectionView.delegate = self
         searchViewController.searchBar.delegate = self
     }
     
@@ -68,6 +69,14 @@ extension SearchViewController: UICollectionViewDataSource {
         cell.rateLabel.text = model.ratingText
         iconLoader?.loadIconData(from: model.urlIcon)
         return cell
+    }
+}
+
+extension SearchViewController: UICollectionViewDelegate {
+    
+    public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let model = models[indexPath.item]
+        iconLoader?.cancelIconDataLoad(from: model.urlIcon)
     }
 }
 
