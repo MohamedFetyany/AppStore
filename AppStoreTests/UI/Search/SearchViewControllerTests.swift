@@ -13,13 +13,13 @@ class SearchViewControllerTests: XCTestCase {
     func test_searching_requestsSearchFromLoader() {
         let (sut ,loader) = makeSUT()
         
-        XCTAssertEqual(loader.loadCallCount, 0,"Expected no loading requests before view is loaded")
+        XCTAssertEqual(loader.loadSearchCallCount, 0,"Expected no loading requests before view is loaded")
         
         sut.simulateUserSearch(anyQuery)
-        XCTAssertEqual(loader.loadCallCount, 1,"Expected a loading request once user searching")
+        XCTAssertEqual(loader.loadSearchCallCount, 1,"Expected a loading request once user searching")
         
         sut.simulateUserSearch(anyQuery)
-        XCTAssertEqual(loader.loadCallCount, 2,"Expected another loading request once user searching again")
+        XCTAssertEqual(loader.loadSearchCallCount, 2,"Expected another loading request once user searching again")
     }
     
     func test_loadingSearchIndicator_isVisibleWhileLoadingSearch() {
@@ -70,6 +70,23 @@ class SearchViewControllerTests: XCTestCase {
         assertThat(sut, isRendering: [search0])
     }
     
+    func test_feedIconView_loadsImageURLWhenVisible() {
+        let search0 = makeSearchItem(id: 1, name: "", category: "",iconURL: URL(string: "https://url-0.com")!)
+        let search1 = makeSearchItem(id: 2, name: "", category: "",iconURL: URL(string: "https://url-1.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [search0,search1], at: 0)
+        
+        XCTAssertEqual(loader.loadedIconURLs, [],"Expeced no icon URL requsts until views becomes visible")
+
+        sut.simulateSearchViewVisible(at: 0)
+        XCTAssertEqual(loader.loadedIconURLs, [search0.urlIcon],"Expected first icon URL request once first view becomes visible")
+        
+        sut.simulateSearchViewVisible(at: 1)
+        XCTAssertEqual(loader.loadedIconURLs, [search0.urlIcon,search1.urlIcon],"Expected second image URL request once second view also becomes visible")
+    }
+    
     //MARK: - Helper
     
     private func makeSUT(
@@ -77,7 +94,7 @@ class SearchViewControllerTests: XCTestCase {
         line: UInt = #line
     ) -> (sut: SearchViewController,loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = SearchViewController(loader: loader)
+        let sut = SearchViewController(searchLoader: loader, iconLoader: loader)
         sut.loadViewIfNeeded()
         trackForMemoryLeaks(loader,file: file,line: line)
         trackForMemoryLeaks(sut,file: file,line: line)
@@ -140,31 +157,44 @@ class SearchViewControllerTests: XCTestCase {
         URL(string: "https://url-2.com")!
     }
     
-    private class LoaderSpy: SearchLoader {
+    private class LoaderSpy: SearchLoader, SearchIconDataLoader {
         
-        private var completions = [(SearchLoader.Result) -> Void]()
+        // MARK:  SearchLoader
+
+        private var searchRequests = [(SearchLoader.Result) -> Void]()
         
-        var loadCallCount: Int {
-            completions.count
+        var loadSearchCallCount: Int {
+            searchRequests.count
         }
         
         func load(query: String, completion: @escaping ((SearchLoader.Result) -> Void)) {
-            completions.append(completion)
+            searchRequests.append(completion)
         }
         
         func completeSearchLoading(with items: [SearchItem] = [],at index: Int) {
-            completions[index](.success(items))
+            searchRequests[index](.success(items))
         }
         
         func completeSearchLoadingWithError(at index: Int) {
             let error = NSError(domain: "any error", code: 0)
-            completions[index](.failure(error))
+            searchRequests[index](.failure(error))
+        }
+        
+        // MARK:  SearchIconDataLoader
+        
+        var loadedIconURLs = [URL]()
+        
+        func loadIconData(from url: URL) {
+            loadedIconURLs.append(url)
         }
     }
 }
 
 private extension SearchViewController {
     
+    func simulateSearchViewVisible(at row: Int) {
+        _ = searchItemView(at: row)
+    }
     
     func searchItemView(at item: Int) -> UICollectionViewCell? {
         let ds = collectionView.dataSource

@@ -7,6 +7,10 @@
 
 import UIKit
 
+public protocol SearchIconDataLoader {
+    func loadIconData(from url: URL)
+}
+
 public final class SearchViewController: UIViewController {
     
     public private(set) lazy var searchViewController = UISearchController()
@@ -19,11 +23,13 @@ public final class SearchViewController: UIViewController {
     
     private var models: [SearchItem] = []
     
-    private var loader: SearchLoader?
+    private var searchLoader: SearchLoader?
+    private var iconLoader: SearchIconDataLoader?
     
-    public convenience init(loader: SearchLoader) {
+    public convenience init(searchLoader: SearchLoader,iconLoader: SearchIconDataLoader) {
         self.init()
-        self.loader = loader
+        self.searchLoader = searchLoader
+        self.iconLoader = iconLoader
     }
     
     public override func viewDidLoad() {
@@ -36,7 +42,7 @@ public final class SearchViewController: UIViewController {
     
     private func load(_ query: String) {
         loadingIndicator.startAnimating()
-        loader?.load(query: query, completion: { [weak self] result in
+        searchLoader?.load(query: query, completion: { [weak self] result in
             switch result {
             case let .success(models):
                 self?.models = models
@@ -60,6 +66,7 @@ extension SearchViewController: UICollectionViewDataSource {
         cell.nameLabel.text = model.category
         cell.categoryLabel.text =  model.category
         cell.rateLabel.text = model.ratingText
+        iconLoader?.loadIconData(from: model.urlIcon)
         return cell
     }
 }
