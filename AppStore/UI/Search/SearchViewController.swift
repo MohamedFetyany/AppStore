@@ -37,9 +37,11 @@ public final class SearchViewController: UIViewController {
     private func load(_ query: String) {
         loadingIndicator.startAnimating()
         loader?.load(query: query, completion: { [weak self] result in
-            if let models = try? result.get() {
+            switch result {
+            case let .success(models):
                 self?.models = models
                 self?.collectionView.reloadData()
+            case .failure: break
             }
             self?.loadingIndicator.stopAnimating()
         })

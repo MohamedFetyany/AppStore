@@ -57,6 +57,19 @@ class SearchViewControllerTests: XCTestCase {
         assertThat(sut, isRendering: [search0,search1,search2])
     }
     
+    func test_loadSearchCompletion_doesNotAlterCurrentRenderingStateOnError() {
+        let search0 = makeSearchItem(id: 1, name: "a name", category: "a category")
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [search0], at: 0)
+        assertThat(sut, isRendering: [search0])
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoadingWithError(at: 1)
+        assertThat(sut, isRendering: [search0])
+    }
+    
     //MARK: - Helper
     
     private func makeSUT(
