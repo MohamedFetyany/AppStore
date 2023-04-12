@@ -7,9 +7,12 @@
 
 import UIKit
 
+public protocol SearchIconDataLoaderTask {
+    func cancel()
+}
+
 public protocol SearchIconDataLoader {
-    func loadIconData(from url: URL)
-    func cancelIconDataLoad(from url: URL)
+    func loadIconData(from url: URL) -> SearchIconDataLoaderTask
 }
 
 public final class SearchViewController: UIViewController {
@@ -23,6 +26,7 @@ public final class SearchViewController: UIViewController {
     }()
     
     private var models: [SearchItem] = []
+    private var tasks = [IndexPath: SearchIconDataLoaderTask]()
     
     private var searchLoader: SearchLoader?
     private var iconLoader: SearchIconDataLoader?
@@ -67,7 +71,7 @@ extension SearchViewController: UICollectionViewDataSource {
         cell.nameLabel.text = model.category
         cell.categoryLabel.text =  model.category
         cell.rateLabel.text = model.ratingText
-        iconLoader?.loadIconData(from: model.urlIcon)
+        tasks[indexPath] = iconLoader?.loadIconData(from: model.urlIcon)
         return cell
     }
 }
@@ -75,8 +79,8 @@ extension SearchViewController: UICollectionViewDataSource {
 extension SearchViewController: UICollectionViewDelegate {
     
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        let model = models[indexPath.item]
-        iconLoader?.cancelIconDataLoad(from: model.urlIcon)
+        tasks[indexPath]?.cancel()
+        tasks[indexPath] = nil
     }
 }
 

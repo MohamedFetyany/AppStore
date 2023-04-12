@@ -201,12 +201,17 @@ class SearchViewControllerTests: XCTestCase {
         
         var cancelledIconURLs = [URL]()
         
-        func loadIconData(from url: URL) {
+        func loadIconData(from url: URL)-> SearchIconDataLoaderTask {
             loadedIconURLs.append(url)
+            return TaskSpy { [weak self] in self?.cancelledIconURLs.append(url) }
         }
         
-        func cancelIconDataLoad(from url: URL) {
-            cancelledIconURLs.append(url)
+        private struct TaskSpy: SearchIconDataLoaderTask {
+            let callback: (() -> Void)
+            
+            func cancel() {
+                callback()
+            }
         }
     }
 }
