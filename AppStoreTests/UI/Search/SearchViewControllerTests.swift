@@ -102,6 +102,27 @@ class SearchViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.cancelledIconURLs, [search0.urlIcon,search1.urlIcon],"Expected two cancelled icon URL requests once second icon is also not visible anymore")
     }
     
+    func test_searchIconViewLoadingIndicator_isVisibleWhileLoadingImage() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [makeSearchItem(id: 1, name: "", category: ""),makeSearchItem(id: 2, name: "", category: "")],at: 0)
+        
+        let view0 = sut.simulateSearchViewVisible(at: 0)
+        let view1 = sut.simulateSearchViewVisible(at: 1)
+        XCTAssertEqual(view0?.isShowingIconLoaderIndicator, true,"Expected loading indicator for first view while loading first icon")
+        XCTAssertEqual(view1?.isShowingIconLoaderIndicator, true, "Expected loading indicator for second view while loading second icon")
+        
+        loader.completeIconLoading(at: 0)
+        XCTAssertEqual(view0?.isShowingIconLoaderIndicator, false,"Expected no loading indicator for first icon once icon loading completes successfully")
+        XCTAssertEqual(view1?.isShowingIconLoaderIndicator, true, "Expected no loading indicator state change for second view once first icon loading completes successfully")
+        
+        loader.completeIconLoadingWithError(at: 1)
+        XCTAssertEqual(view0?.isShowingIconLoaderIndicator, false,"Expected no loading indicator state change for first view once second icon loading completes with error")
+        XCTAssertEqual(view1?.isShowingIconLoaderIndicator, false, "Expected no loading indicator for second view once icon loading completes with error")
+
+    }
+    
     //MARK: - Helper
     
     private func makeSUT(
@@ -197,13 +218,26 @@ class SearchViewControllerTests: XCTestCase {
         
         // MARK:  SearchIconDataLoader
         
-        var loadedIconURLs = [URL]()
+        private var iconRequests = [(url: URL,completion: ((SearchIconDataLoader.Result) -> Void))]()
+       
+        var loadedIconURLs:[URL] {
+            iconRequests.map { $0.url }
+        }
         
         var cancelledIconURLs = [URL]()
         
-        func loadIconData(from url: URL)-> SearchIconDataLoaderTask {
-            loadedIconURLs.append(url)
+        func loadIconData(from url: URL,completion: @escaping ((SearchIconDataLoader.Result) -> Void))-> SearchIconDataLoaderTask {
+            iconRequests.append((url,completion))
             return TaskSpy { [weak self] in self?.cancelledIconURLs.append(url) }
+        }
+        
+        func completeIconLoading(with iconData: Data = Data() ,at index: Int) {
+            iconRequests[index].completion(.success(iconData))
+        }
+        
+        func completeIconLoadingWithError(at index: Int) {
+            let error = NSError(domain: "any error", code: 0)
+            iconRequests[index].completion(.failure(error))
         }
         
         private struct TaskSpy: SearchIconDataLoaderTask {
@@ -226,8 +260,9 @@ private extension SearchViewController {
         delegate?.collectionView?(collectionView, didEndDisplaying: view!, forItemAt: index)
     }
     
-    func simulateSearchViewVisible(at row: Int) {
-        _ = searchItemView(at: row)
+    @discardableResult
+    func simulateSearchViewVisible(at row: Int) -> SearchItemCell? {
+        searchItemView(at: row) as? SearchItemCell
     }
     
     func searchItemView(at item: Int) -> UICollectionViewCell? {
@@ -254,6 +289,10 @@ private extension SearchViewController {
 }
 
 private extension SearchItemCell {
+    
+    var isShowingIconLoaderIndicator: Bool {
+        searchIconContainer.isShimmering
+    }
     
     var nameText: String? {
         nameLabel.text
