@@ -120,7 +120,28 @@ class SearchViewControllerTests: XCTestCase {
         loader.completeIconLoadingWithError(at: 1)
         XCTAssertEqual(view0?.isShowingIconLoaderIndicator, false,"Expected no loading indicator state change for first view once second icon loading completes with error")
         XCTAssertEqual(view1?.isShowingIconLoaderIndicator, false, "Expected no loading indicator for second view once icon loading completes with error")
-
+    }
+    
+    func test_searchIconView_rendersImageLoadedFromURL() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [makeSearchItem(id: 1),makeSearchItem(id: 2)], at: 0)
+        
+        let view0 = sut.simulateSearchViewVisible(at: 0)
+        let view1 = sut.simulateSearchViewVisible(at: 1)
+        XCTAssertEqual(view0?.renderedIcon, .none,"Expected no icon for first view while loading first image")
+        XCTAssertEqual(view1?.renderedIcon, .none, "Expected no icon for second view while loading second image")
+        
+        let imageData0 = UIImage.make(withColor: .red).pngData()!
+        loader.completeIconLoading(with: imageData0, at: 0)
+        XCTAssertEqual(view0?.renderedIcon, imageData0,"Expected icon for first view once first image loading completes successfully")
+        XCTAssertEqual(view1?.renderedIcon, .none, "Expected no image state change for second view once first image loading completes successfully")
+        
+        let imageData1 = UIImage.make(withColor: .green).pngData()!
+        loader.completeIconLoading(with: imageData1, at: 1)
+        XCTAssertEqual(view0?.renderedIcon, imageData0,"Expected no image state change for first view once second icon loading completes successfully")
+        XCTAssertEqual(view1?.renderedIcon, imageData1, "Expected image for second view once second image loading completes successfully")
     }
     
     //MARK: - Helper
@@ -172,8 +193,8 @@ class SearchViewControllerTests: XCTestCase {
     
     private func makeSearchItem(
         id: Int,
-        name: String,
-        category: String,
+        name: String = "",
+        category: String = "",
         rate: Float? = nil,
         urls: [URL] = [URL(string: "https://url-1.com")!,URL(string: "https://url-2.com")!],
         iconURL: URL = URL(string: "https://url-icon.com")!
@@ -290,6 +311,9 @@ private extension SearchViewController {
 
 private extension SearchItemCell {
     
+    var renderedIcon: Data? {
+        iconImageView.image?.pngData()
+    }
     var isShowingIconLoaderIndicator: Bool {
         searchIconContainer.isShimmering
     }
@@ -304,5 +328,18 @@ private extension SearchItemCell {
     
     var rateText: String? {
         rateLabel.text
+    }
+}
+
+private extension UIImage {
+    static func make(withColor color: UIColor) -> UIImage {
+        let rect = CGRect(x: 0, y: 0, width: 1, height: 1)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        
+        return UIGraphicsImageRenderer(size: rect.size, format: format).image { rendererContext in
+            color.setFill()
+            rendererContext.fill(rect)
+        }
     }
 }

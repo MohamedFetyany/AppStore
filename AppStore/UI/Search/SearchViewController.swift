@@ -75,6 +75,8 @@ extension SearchViewController: UICollectionViewDataSource {
         cell.rateLabel.text = model.ratingText
         cell.searchIconContainer.startShimmering()
         tasks[indexPath] = iconLoader?.loadIconData(from: model.urlIcon) { [weak cell] result in
+            let data = try? result.get()
+            cell?.iconImageView.image = data.map(UIImage.init) ?? nil
             cell?.searchIconContainer.stopShimmering()
         }
         return cell
@@ -101,6 +103,7 @@ public class SearchItemCell: UICollectionViewCell {
     public private(set) var categoryLabel = UILabel()
     public private(set) var rateLabel = UILabel()
     public private(set) var searchIconContainer = UIView()
+    public private(set) var iconImageView = UIImageView()
 }
 
 extension UIView {
