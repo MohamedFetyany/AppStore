@@ -144,6 +144,27 @@ class SearchViewControllerTests: XCTestCase {
         XCTAssertEqual(view1?.renderedIcon, imageData1, "Expected image for second view once second image loading completes successfully")
     }
     
+    func test_searchIconViewRetryButton_isVisiblwOnImageURLLoadError() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [makeSearchItem(id: 1),makeSearchItem(id: 2)], at: 0)
+        
+        let view0 = sut.simulateSearchViewVisible(at: 0)
+        let view1 = sut.simulateSearchViewVisible(at: 1)
+        XCTAssertEqual(view0?.isShowingRetryAction, false,"Expected no retry action fro first view while loading first image")
+        XCTAssertEqual(view1?.isShowingRetryAction, false,"Expected no retry action for second view while loading second image")
+        
+        let imageData = UIImage.make(withColor: .red).pngData()!
+        loader.completeIconLoading(with: imageData, at: 0)
+        XCTAssertEqual(view0?.isShowingRetryAction, false,"Expected no retry action for first view once first image loading completes successfully")
+        XCTAssertEqual(view1?.isShowingRetryAction, false,"Expected no retry action state change for second view once first image loading completes successfully")
+        
+        loader.completeIconLoadingWithError(at: 1)
+        XCTAssertEqual(view0?.isShowingRetryAction, false,"Expected no retry actoin state change for first view once second image loading completes with error")
+        XCTAssertEqual(view1?.isShowingRetryAction, true,"Expected retry action for second view once second image loading completes with error")
+    }
+    
     //MARK: - Helper
     
     private func makeSUT(
@@ -310,6 +331,10 @@ private extension SearchViewController {
 }
 
 private extension SearchItemCell {
+    
+    var isShowingRetryAction: Bool {
+        !iconImageRetryButton.isHidden
+    }
     
     var renderedIcon: Data? {
         iconImageView.image?.pngData()
