@@ -165,6 +165,20 @@ class SearchViewControllerTests: XCTestCase {
         XCTAssertEqual(view1?.isShowingRetryAction, true,"Expected retry action for second view once second image loading completes with error")
     }
     
+    func test_searchIconViewRetryButton_isVisibleOnInvalidImageData() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [makeSearchItem(id: 1)], at: 0)
+        
+        let view = sut.simulateSearchViewVisible(at: 0)
+        XCTAssertEqual(view?.isShowingRetryAction, false,"Expected no retry action while loading image")
+        
+        let invalidImageData = Data("invalid image data".utf8)
+        loader.completeIconLoading(with: invalidImageData, at: 0)
+        XCTAssertEqual(view?.isShowingRetryAction, true,"Expected retry action once image loading completes with invalid image data")
+    }
+    
     //MARK: - Helper
     
     private func makeSUT(

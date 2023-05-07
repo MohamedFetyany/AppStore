@@ -77,8 +77,9 @@ extension SearchViewController: UICollectionViewDataSource {
         cell.searchIconContainer.startShimmering()
         tasks[indexPath] = iconLoader?.loadIconData(from: model.urlIcon) { [weak cell] result in
             let data = try? result.get()
-            cell?.iconImageView.image = data.map(UIImage.init) ?? nil
-            cell?.iconImageRetryButton.isHidden = (data != nil)
+            let image = data.map(UIImage.init) ?? nil
+            cell?.iconImageView.image = image
+            cell?.iconImageRetryButton.isHidden = (image != nil)
             cell?.searchIconContainer.stopShimmering()
         }
         return cell
