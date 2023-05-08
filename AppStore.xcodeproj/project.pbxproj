@@ -16,7 +16,7 @@
 		B553677828A35EED0024AC53 /* SceneDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B553677728A35EED0024AC53 /* SceneDelegateTests.swift */; };
 		B57B8DD528A3FACA00D2483F /* SFSymbole.swift in Sources */ = {isa = PBXBuildFile; fileRef = B57B8DD428A3FACA00D2483F /* SFSymbole.swift */; };
 		B57B8DDB28A42B4A00D2483F /* SearchViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B57B8DDA28A42B4A00D2483F /* SearchViewControllerTests.swift */; };
-		B5B0D4CE28D64222003C57FE /* UIController+Simulate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B0D4CD28D64222003C57FE /* UIController+Simulate.swift */; };
+		B5B0D4CE28D64222003C57FE /* UIControl+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B0D4CD28D64222003C57FE /* UIControl+TestHelpers.swift */; };
 		B5B0D4D128D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B0D4D028D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift */; };
 		DD16161F2A08D2DD0099FDF9 /* UIImage+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD16161E2A08D2DD0099FDF9 /* UIImage+TestHelpers.swift */; };
 		DD1616232A08D3BE0099FDF9 /* UIButton+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1616222A08D3BE0099FDF9 /* UIButton+TestHelpers.swift */; };
@@ -54,7 +54,7 @@
 		B553677728A35EED0024AC53 /* SceneDelegateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegateTests.swift; sourceTree = "<group>"; };
 		B57B8DD428A3FACA00D2483F /* SFSymbole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbole.swift; sourceTree = "<group>"; };
 		B57B8DDA28A42B4A00D2483F /* SearchViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewControllerTests.swift; sourceTree = "<group>"; };
-		B5B0D4CD28D64222003C57FE /* UIController+Simulate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIController+Simulate.swift"; sourceTree = "<group>"; };
+		B5B0D4CD28D64222003C57FE /* UIControl+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+TestHelpers.swift"; sourceTree = "<group>"; };
 		B5B0D4D028D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		DD16161E2A08D2DD0099FDF9 /* UIImage+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+TestHelpers.swift"; sourceTree = "<group>"; };
 		DD1616222A08D3BE0099FDF9 /* UIButton+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+TestHelpers.swift"; sourceTree = "<group>"; };
@@ -185,7 +185,7 @@
 		B5B0D4CC28D64203003C57FE /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				B5B0D4CD28D64222003C57FE /* UIController+Simulate.swift */,
+				B5B0D4CD28D64222003C57FE /* UIControl+TestHelpers.swift */,
 				DD16161E2A08D2DD0099FDF9 /* UIImage+TestHelpers.swift */,
 				DD1616222A08D3BE0099FDF9 /* UIButton+TestHelpers.swift */,
 			);
@@ -354,7 +354,7 @@
 				B553677828A35EED0024AC53 /* SceneDelegateTests.swift in Sources */,
 				B57B8DDB28A42B4A00D2483F /* SearchViewControllerTests.swift in Sources */,
 				DDE747C62994C2AB00E540B7 /* SharedTestHelpers.swift in Sources */,
-				B5B0D4CE28D64222003C57FE /* UIController+Simulate.swift in Sources */,
+				B5B0D4CE28D64222003C57FE /* UIControl+TestHelpers.swift in Sources */,
 				DDF7B94B29811ABA00CD8E3A /* RemoteSearchLoaderTests.swift in Sources */,
 				B5B0D4D128D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift in Sources */,
 			);
