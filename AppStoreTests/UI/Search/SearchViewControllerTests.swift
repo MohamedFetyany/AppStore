@@ -179,6 +179,29 @@ class SearchViewControllerTests: XCTestCase {
         XCTAssertEqual(view?.isShowingRetryAction, true,"Expected retry action once image loading completes with invalid image data")
     }
     
+    func test_searchIconViewRetryAction_retriesImageLoad() {
+        let image0 = makeSearchItem(id: 1,iconURL: URL(string: "http://url-0.com")!)
+        let image1 = makeSearchItem(id: 2,iconURL: URL(string: "http://url-1.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [image0,image1], at: 0)
+        
+        let view0 = sut.simulateSearchViewVisible(at: 0)
+        let view1 = sut.simulateSearchViewVisible(at: 1)
+        XCTAssertEqual(loader.loadedIconURLs, [image0.urlIcon,image1.urlIcon], "Expected two image URL request for the two visible views")
+        
+        loader.completeIconLoadingWithError(at: 0)
+        loader.completeIconLoadingWithError(at: 1)
+        XCTAssertEqual(loader.loadedIconURLs, [image0.urlIcon,image1.urlIcon],"Expected only two image URL requests before retry action")
+        
+        view0?.simulateRetryAction()
+        XCTAssertEqual(loader.loadedIconURLs, [image0.urlIcon,image1.urlIcon,image0.urlIcon],"Expected third iconURL request after view retry action")
+        
+        view1?.simulateRetryAction()
+        XCTAssertEqual(loader.loadedIconURLs, [image0.urlIcon,image1.urlIcon,image0.urlIcon,image1.urlIcon], "Expected fourth iconURL request after second view retry action")
+    }
+    
     //MARK: - Helper
     
     private func makeSUT(
@@ -346,6 +369,10 @@ private extension SearchViewController {
 
 private extension SearchItemCell {
     
+    func simulateRetryAction() {
+        iconImageRetryButton.simulateTap()
+    }
+    
     var isShowingRetryAction: Bool {
         !iconImageRetryButton.isHidden
     }
@@ -367,6 +394,12 @@ private extension SearchItemCell {
     
     var rateText: String? {
         rateLabel.text
+    }
+}
+
+private extension UIButton {
+    func simulateTap() {
+        simulate(event: .touchUpInside)
     }
 }
 

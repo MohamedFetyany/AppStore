@@ -75,13 +75,23 @@ extension SearchViewController: UICollectionViewDataSource {
         cell.rateLabel.text = model.ratingText
         cell.iconImageRetryButton.isHidden = true
         cell.searchIconContainer.startShimmering()
-        tasks[indexPath] = iconLoader?.loadIconData(from: model.urlIcon) { [weak cell] result in
-            let data = try? result.get()
-            let image = data.map(UIImage.init) ?? nil
-            cell?.iconImageView.image = image
-            cell?.iconImageRetryButton.isHidden = (image != nil)
-            cell?.searchIconContainer.stopShimmering()
+        
+        let loadIcon =  { [weak self,weak cell] in
+            guard let self else { return }
+            
+            self.tasks[indexPath] = self.iconLoader?.loadIconData(from: model.urlIcon) { [weak cell] result in
+                let data = try? result.get()
+                let image = data.map(UIImage.init) ?? nil
+                cell?.iconImageView.image = image
+                cell?.iconImageRetryButton.isHidden = (image != nil)
+                cell?.searchIconContainer.stopShimmering()
+            }
         }
+        
+        cell.onRetry = loadIcon
+        
+        loadIcon()
+        
         return cell
     }
 }
@@ -107,7 +117,17 @@ public class SearchItemCell: UICollectionViewCell {
     public private(set) var rateLabel = UILabel()
     public private(set) var searchIconContainer = UIView()
     public private(set) var iconImageView = UIImageView()
-    public private(set) var iconImageRetryButton = UIButton()
+    public private(set) lazy var iconImageRetryButton: UIButton = {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(retryButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    var onRetry: (() -> Void)?
+    
+    @objc private func retryButtonTapped() {
+        onRetry?()
+    }
 }
 
 extension UIView {
