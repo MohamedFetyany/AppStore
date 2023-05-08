@@ -110,8 +110,19 @@ extension SearchViewController: UICollectionViewDataSourcePrefetching {
     public func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
             let cellModel = models[indexPath.item]
-            _ = iconLoader?.loadIconData(from: cellModel.urlIcon) { _ in }
+            tasks[indexPath] = iconLoader?.loadIconData(from: cellModel.urlIcon) { _ in }
         }
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+        indexPaths.forEach { indexPath in
+            cancelTask(at: indexPath)
+        }
+    }
+    
+    private func cancelTask(at indexPath: IndexPath) {
+        tasks[indexPath]?.cancel()
+        tasks[indexPath] = nil
     }
 }
 

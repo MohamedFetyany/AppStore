@@ -218,6 +218,22 @@ class SearchViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadedIconURLs, [image0.urlIcon,image1.urlIcon], "Expected second icon url request once second icon is near visible")
     }
     
+    func test_searchIconView_cancelsImageURLPreloadingWhenNotVisibleAnymore() {
+        let image0 = makeSearchItem(id: 1,iconURL: URL(string: "http://url-0.com")!)
+        let image1 = makeSearchItem(id: 2,iconURL: URL(string: "http://url-1.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [image0,image1], at: 0)
+        XCTAssertEqual(loader.cancelledIconURLs, [], "Expected no cancelled icon URL requests until icon is near visible")
+        
+        sut.simulateSearchViewNotNearVisible(at: 0)
+        XCTAssertEqual(loader.cancelledIconURLs, [image0.urlIcon],"Expected first cancelled icon URL request once first icon is not near visible anymore")
+        
+        sut.simulateSearchViewNotNearVisible(at: 1)
+        XCTAssertEqual(loader.cancelledIconURLs, [image0.urlIcon,image1.urlIcon], "Expected second cancelled icon URL request once second icon is not near visible anymore")
+    }
+    
     //MARK: - Helper
     
     private func makeSUT(
@@ -347,23 +363,31 @@ class SearchViewControllerTests: XCTestCase {
 
 private extension SearchViewController {
     
-    func simulateSearchViewNearVisible(at row: Int) {
+    func simulateSearchViewNotNearVisible(at item: Int) {
+        simulateSearchViewNearVisible(at: item)
+        
         let ds = collectionView.prefetchDataSource
-        let index = IndexPath(row: row, section: searchSection)
+        let index = IndexPath(item: item, section: searchSection)
+        ds?.collectionView?(collectionView, cancelPrefetchingForItemsAt: [index])
+    }
+    
+    func simulateSearchViewNearVisible(at item: Int) {
+        let ds = collectionView.prefetchDataSource
+        let index = IndexPath(item: item, section: searchSection)
         ds?.collectionView(collectionView, prefetchItemsAt: [index])
     }
     
-    func simulateSearchViewNotVisible(at row: Int) {
-        let view = searchItemView(at: row)
+    func simulateSearchViewNotVisible(at item: Int) {
+        let view = searchItemView(at: item)
         
         let delegate = collectionView.delegate
-        let index = IndexPath(row: row, section: searchSection)
+        let index = IndexPath(item: item, section: searchSection)
         delegate?.collectionView?(collectionView, didEndDisplaying: view!, forItemAt: index)
     }
     
     @discardableResult
-    func simulateSearchViewVisible(at row: Int) -> SearchItemCell? {
-        searchItemView(at: row) as? SearchItemCell
+    func simulateSearchViewVisible(at item: Int) -> SearchItemCell? {
+        searchItemView(at: item) as? SearchItemCell
     }
     
     func searchItemView(at item: Int) -> UICollectionViewCell? {
