@@ -19,6 +19,7 @@
 		B5B0D4CE28D64222003C57FE /* UIController+Simulate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B0D4CD28D64222003C57FE /* UIController+Simulate.swift */; };
 		B5B0D4D128D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B0D4D028D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift */; };
 		DD16161F2A08D2DD0099FDF9 /* UIImage+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD16161E2A08D2DD0099FDF9 /* UIImage+TestHelpers.swift */; };
+		DD1616232A08D3BE0099FDF9 /* UIButton+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1616222A08D3BE0099FDF9 /* UIButton+TestHelpers.swift */; };
 		DD52BAE6298BDA1A0053CB47 /* RemoteSearchLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD52BAE5298BDA1A0053CB47 /* RemoteSearchLoader.swift */; };
 		DD52BAE8298BDA960053CB47 /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD52BAE7298BDA960053CB47 /* HTTPClient.swift */; };
 		DD52BAEA298BDAC20053CB47 /* SearchItemsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD52BAE9298BDAC20053CB47 /* SearchItemsMapper.swift */; };
@@ -56,6 +57,7 @@
 		B5B0D4CD28D64222003C57FE /* UIController+Simulate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIController+Simulate.swift"; sourceTree = "<group>"; };
 		B5B0D4D028D6434C003C57FE /* XCTestCase+MemoryLeakTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeakTracking.swift"; sourceTree = "<group>"; };
 		DD16161E2A08D2DD0099FDF9 /* UIImage+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+TestHelpers.swift"; sourceTree = "<group>"; };
+		DD1616222A08D3BE0099FDF9 /* UIButton+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+TestHelpers.swift"; sourceTree = "<group>"; };
 		DD52BAE5298BDA1A0053CB47 /* RemoteSearchLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSearchLoader.swift; sourceTree = "<group>"; };
 		DD52BAE7298BDA960053CB47 /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		DD52BAE9298BDAC20053CB47 /* SearchItemsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchItemsMapper.swift; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 			children = (
 				B5B0D4CD28D64222003C57FE /* UIController+Simulate.swift */,
 				DD16161E2A08D2DD0099FDF9 /* UIImage+TestHelpers.swift */,
+				DD1616222A08D3BE0099FDF9 /* UIButton+TestHelpers.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -345,6 +348,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DDE747A22993648700E540B7 /* URLSessionHTTPClientTests.swift in Sources */,
+				DD1616232A08D3BE0099FDF9 /* UIButton+TestHelpers.swift in Sources */,
 				B553677628A35CD70024AC53 /* AppDelegateTests.swift in Sources */,
 				DD16161F2A08D2DD0099FDF9 /* UIImage+TestHelpers.swift in Sources */,
 				B553677828A35EED0024AC53 /* SceneDelegateTests.swift in Sources */,

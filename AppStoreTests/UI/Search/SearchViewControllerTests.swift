@@ -442,9 +442,3 @@ private extension SearchItemCell {
         rateLabel.text
     }
 }
-
-private extension UIButton {
-    func simulateTap() {
-        simulate(event: .touchUpInside)
-    }
-}
