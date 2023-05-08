@@ -202,6 +202,22 @@ class SearchViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadedIconURLs, [image0.urlIcon,image1.urlIcon,image0.urlIcon,image1.urlIcon], "Expected fourth iconURL request after second view retry action")
     }
     
+    func test_searchIconView_preloadsImageURLWhenNearVisible() {
+        let image0 = makeSearchItem(id: 1,iconURL: URL(string: "http://url-0.com")!)
+        let image1 = makeSearchItem(id: 2,iconURL: URL(string: "http://url-1.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateUserSearch(anyQuery)
+        loader.completeSearchLoading(with: [image0,image1], at: 0)
+        XCTAssertEqual(loader.loadedIconURLs, [],"Expected no image URL requests until image is near visible")
+        
+        sut.simulateSearchViewNearVisible(at: 0)
+        XCTAssertEqual(loader.loadedIconURLs, [image0.urlIcon],"Expected first icon URL request once first icon is near visible")
+        
+        sut.simulateSearchViewNearVisible(at: 1)
+        XCTAssertEqual(loader.loadedIconURLs, [image0.urlIcon,image1.urlIcon], "Expected second icon url request once second icon is near visible")
+    }
+    
     //MARK: - Helper
     
     private func makeSUT(
@@ -330,6 +346,12 @@ class SearchViewControllerTests: XCTestCase {
 }
 
 private extension SearchViewController {
+    
+    func simulateSearchViewNearVisible(at row: Int) {
+        let ds = collectionView.prefetchDataSource
+        let index = IndexPath(row: row, section: searchSection)
+        ds?.collectionView(collectionView, prefetchItemsAt: [index])
+    }
     
     func simulateSearchViewNotVisible(at row: Int) {
         let view = searchItemView(at: row)

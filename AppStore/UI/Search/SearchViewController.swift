@@ -44,6 +44,7 @@ public final class SearchViewController: UIViewController {
         
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.prefetchDataSource = self
         searchViewController.searchBar.delegate = self
     }
     
@@ -101,6 +102,16 @@ extension SearchViewController: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         tasks[indexPath]?.cancel()
         tasks[indexPath] = nil
+    }
+}
+
+extension SearchViewController: UICollectionViewDataSourcePrefetching {
+    
+    public func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        indexPaths.forEach { indexPath in
+            let cellModel = models[indexPath.item]
+            _ = iconLoader?.loadIconData(from: cellModel.urlIcon) { _ in }
+        }
     }
 }
 
